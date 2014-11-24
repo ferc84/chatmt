@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.socket.io/socket.io-1.2.1.js"></script>
+    <script type="text/javascript">
+        var socketio = io.connect("127.0.0.1:1337");
+        socketio.on("message_to_client", function (data) {
+
+
+
+            document.getElementById("chatlog").innerHTML = (document.getElementById("chatlog").innerHTML + data['message']);
+
+            document.getElementById("chatlog").scrollTop = document.getElementById("chatlog").scrollHeight;
+
+            document.getElementById("message_input").value = '';
+        });
+
+        function sendMessage() {
+            var msg = document.getElementById("message_input").value;
+            var name = document.getElementById("name").value;
+
+            if (msg.length > 0 && name.length > 0) {
+
+                var name = document.getElementById("name").value;
+                name = name + ': ';
+
+                msg = name + msg + '\n';
+
+
+                socketio.emit("message_to_server", {
+                    message: msg
+                });
+
+            };
+        };
+
+        function messageSend() {
+            var key = window.event.keyCode;
+
+            // If the user has pressed enter
+            if (key == 13) {
+                sendMessage();
+            } else {
+                return true;
+            }
+        }
+    </script>
+
+    <style>
+        #messages {
+            top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <textarea rows="15" cols="100" id="chatlog" style="resize: none;" readonly></textarea>
+    <div id="messages">
+
+        <input type="text" id="name" placeholder="Name..." required>
+        <br>
+        <textarea rows="5" cols="100" id="message_input" onkeypress="messageSend()"></textarea>
+        <br>
+        <button onclick="sendMessage()">send</button>
+
+    </div>
+</body>
+
+</html>
